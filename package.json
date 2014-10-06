@@ -20,10 +20,11 @@
     "commonjs"
   ],
   "dependencies": {
+    "broccoli-kitchen-sink-helpers": "^0.2.5",
+    "broccoli-writer": "^0.1.1",
     "es6-module-transpiler": "^0.3.6",
     "js-string-escape": "^1.0.0",
-    "mkdirp": "^0.3.5",
-    "broccoli-writer": "^0.1.1",
-    "broccoli-kitchen-sink-helpers": "^0.2.5"
+    "minimatch": "^1.0.0",
+    "mkdirp": "^0.3.5"
   }
 }
