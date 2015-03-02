@@ -105,6 +105,9 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
           if (self.getWrapInEval()) {
             compiledModule = wrapInEval(compiledModule, modulePath)
           }
+          if (self.postProcess) {
+            compiledModule = self.postProcess(compiledModule, modulePath);
+          }
           cacheObject = {
             output: compiledModule,
             imports: compiler.imports.map(function (importNode) {
