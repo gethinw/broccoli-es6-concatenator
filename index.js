@@ -72,15 +72,32 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
 
     self.cache = newCache
 
-    function addModule (moduleName) {
+    function isIgnored(moduleName) {
+      if (typeof(self.ignoredModules) === 'function') {
+        return self.ignoredModules(moduleName)
+      }
+      if (self.ignoredModules) {
+        return self.ignoredModules.indexOf(moduleName) !== -1
+      }
+      return false;
+    }
+
+    function addModule (moduleName, sourceFile) {
       if (modulesAdded[moduleName]) return
-      if (self.ignoredModules && self.ignoredModules.indexOf(moduleName) !== -1) return
+      if (isIgnored(moduleName)) return
       var i
       var modulePath = moduleName + '.js'
       var fullPath = srcDir + '/' + modulePath
       var imports
+
       try {
         var statsHash = helpers.hashStats(fs.statSync(fullPath), modulePath)
+      } catch(e) {
+        e.file = sourceFile
+        throw e
+      }
+
+      try {
         var cacheObject = self.cache.es6[statsHash]
         if (cacheObject == null) { // cache miss
           var fileContents = fs.readFileSync(fullPath).toString()
@@ -126,7 +143,7 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
       }
       for (i = 0; i < imports.length; i++) {
         var importName = imports[i]
-        addModule(importName)
+        addModule(importName, modulePath)
       }
     }
 
