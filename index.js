@@ -5,7 +5,6 @@ var ES6Transpiler = require('es6-module-transpiler').Compiler
 var jsStringEscape = require('js-string-escape')
 var helpers = require('broccoli-kitchen-sink-helpers')
 var Writer = require('broccoli-writer')
-var minimatch = require('minimatch')
 
 module.exports = ES6Concatenator
 ES6Concatenator.prototype = Object.create(Writer.prototype)
@@ -75,7 +74,7 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
 
     function addModule (moduleName) {
       if (modulesAdded[moduleName]) return
-      if (self.ignoredModules && self.ignoredModules.filter(ignoredModuleMatches(moduleName)).length) return
+      if (self.ignoredModules && self.ignoredModules.indexOf(moduleName) !== -1) return
       var i
       var modulePath = moduleName + '.js'
       var fullPath = srcDir + '/' + modulePath
@@ -146,12 +145,6 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
       }
       newCache.legacy[statsHash] = cacheObject
       output.push(cacheObject.output)
-    }
-
-    function ignoredModuleMatches(module) {
-        return function(ignorePattern){
-            return minimatch(module, ignorePattern);
-        }
     }
   })
 }
