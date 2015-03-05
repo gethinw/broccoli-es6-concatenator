@@ -31,6 +31,13 @@ ES6Concatenator.prototype.getWrapInEval = function () {
   return this.wrapInEval == null ? true : this.wrapInEval
 }
 
+
+ES6Concatenator.prototype.writeFiles = function (destDir, output) {
+    helpers.assertAbsolutePaths([this.outputFile])
+    mkdirp.sync(path.join(destDir, path.dirname(this.outputFile)))
+    fs.writeFileSync(path.join(destDir, this.outputFile), output.map(function(i){return i.content;}).join('\n;'))
+}
+
 ES6Concatenator.prototype.write = function (readTree, destDir) {
   var self = this
 
@@ -66,9 +73,7 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
       }
     }
 
-    helpers.assertAbsolutePaths([self.outputFile])
-    mkdirp.sync(path.join(destDir, path.dirname(self.outputFile)))
-    fs.writeFileSync(path.join(destDir, self.outputFile), output.join('\n;'))
+    self.writeFiles(destDir, output);
 
     self.cache = newCache
 
@@ -133,7 +138,7 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
         }
         newCache.es6[statsHash] = cacheObject
         imports = cacheObject.imports
-        output.push(cacheObject.output)
+        output.push({source: moduleName, content: cacheObject.output})
         modulesAdded[moduleName] = true
       } catch (err) {
         // Bug: When a non-existent file is referenced, this is the referenced
